@@ -57,12 +57,11 @@ while True:
         player_pos.x -= 300 * dt
     if keys[pygame.K_d]:
         player_pos.x += 300 * dt
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
-
-
+            pygame.quit()
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
