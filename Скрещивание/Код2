@@ -1,0 +1,90 @@
+import pygame
+import random
+import sys
+
+# Настройки
+WIDTH, HEIGHT = 800, 600
+BALL_RADIUS = 20
+LINE_WIDTH = 5
+LINE_COLOR = (255, 0, 0)
+BALL_COLOR = (0, 0, 255)
+FPS = 60
+clock = pygame.time.Clock()
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+# Класс для шарика
+class Ball(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.Surface((BALL_RADIUS * 2, BALL_RADIUS * 2), pygame.SRCALPHA)
+        pygame.draw.circle(self.image, BALL_COLOR, (BALL_RADIUS, BALL_RADIUS), BALL_RADIUS)
+        self.rect = self.image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+        self.speed = [5, 5]
+
+    def update(self):
+        # Двигаем шарик
+        self.rect.x += self.speed[0]
+        self.rect.y += self.speed[1]
+
+        # Проверка на столкновение с границами экрана
+        if self.rect.left <= 0 or self.rect.right >= WIDTH:
+            self.speed[0] = -self.speed[0]  # Отражение по X
+        if self.rect.top <= 0 or self.rect.bottom >= HEIGHT:
+            self.speed[1] = -self.speed[1]  # Отражение по Y
+
+# Класс для стрелы
+class Line(pygame.sprite.Sprite):
+    def __init__(self, start_pos, angle):
+        super().__init__()
+        self.image = pygame.Surface((LINE_WIDTH, 5))
+        self.image.fill(LINE_COLOR)
+        self.rect = self.image.get_rect(center=start_pos)
+        self.angle = angle
+
+    def update(self):
+        # Двигаем линию в зависимости от угла
+        self.rect.x += 10 * self.angle[0]
+        self.rect.y += 10 * self.angle[1]
+
+        # Удаляем линию, если она выходит за границы экрана
+        if self.rect.x < 0 or self.rect.x > WIDTH or self.rect.y < 0 or self.rect.y > HEIGHT:
+            self.kill()
+
+
+
+# Создаем группы спрайтов
+all_sprites = pygame.sprite.Group()
+lines = pygame.sprite.Group()
+
+# Создаем шарик
+ball = Ball()
+all_sprites.add(ball)
+
+# Основной игровой цикл
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:  # Стрелять при нажатии пробела
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                dx = mouse_x - ball.rect.centerx
+                dy = mouse_y - ball.rect.centery
+                angle = (dx, dy)
+                if dx != 0 or dy != 0:  # Проверка для избежания деления на ноль
+                    norm = (dx**2 + dy**2)**0.5
+                    direction = (dx/norm, dy/norm)
+                    line = Line(ball.rect.center, direction)
+                    all_sprites.add(line)
+                    lines.add(line)
+
+    # Обновление спрайтов
+    all_sprites.update()
+
+    # Рисуем всё
+    screen.fill("PINK")  # Белый фон
+    all_sprites.draw(screen)
+
+    # Обновляем экран
+    pygame.display.flip()
+    clock.tick(FPS)
