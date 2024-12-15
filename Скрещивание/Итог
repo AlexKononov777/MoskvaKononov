@@ -45,21 +45,24 @@ lines = pygame.sprite.Group()
 
 # Основной игровой цикл
 while True:
+    screen.fill("WHITE")  # розовый фон
+    all_sprites.draw(screen)
+    pygame.draw.circle(screen, "black", player_pos, 40)
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_w]:
+        player_pos.y -= 300 * dt
+    if keys[pygame.K_s]:
+        player_pos.y += 300 * dt
+    if keys[pygame.K_a]:
+        player_pos.x -= 300 * dt
+    if keys[pygame.K_d]:
+        player_pos.x += 300 * dt
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        screen.fill("WHITE")  # розовый фон
-        all_sprites.draw(screen)
-        pygame.draw.circle(screen, "black", player_pos, 40)
-        keys = pygame.key.get_pressed()
-        if event.type == pygame.K_w:
-            player_pos.y -= 300 * dt
-        if event.type == pygame.K_s:
-            player_pos.y += 300 * dt
-        if event.type == pygame.K_a:
-            player_pos.x -= 300 * dt
-        if event.type == pygame.K_d:
-            player_pos.x += 300 * dt
+
+
+
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -74,11 +77,12 @@ while True:
                     lines.add(line)
 
 
-    # Обновление спрайтов
-        all_sprites.update()
+# Обновление спрайтов
+    all_sprites.update()
 
-    # Рисуем всё
+# Рисуем всё
 
 
-        pygame.display.flip()
-        dt = clock.tick(60) / 1000
+    pygame.display.flip()
+    clock.tick(60)
+    dt = clock.tick(60) / 1000
